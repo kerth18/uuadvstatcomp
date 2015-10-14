@@ -30,7 +30,7 @@ library(parallel)
 cores <- detectCores()
 cluster <- makePSOCKcluster(cores)
 
-## 2 cores
+## cores=2
 int1 <- c(-7e5,0)
 int2 <- c(0,7e5)
 list_intervals <- list(int1,int2)
@@ -38,3 +38,23 @@ parLapply(cluster, list_intervals,
           (function(int) {integrate(function(x) {x*sin(x)}, int[1], int[2], subdivisions = 1e7)}))
 ## user  system elapsed 
 ## 0.00    0.02    6.32 
+
+## n cores
+# create a list of n intervals of equal length
+start_interval = -7e5
+end_interval = 7e5
+nb_intervals = 8
+interval_length = (end_interval - start_interval)/nb_intervals
+list_intervals <- list()
+for (i in 1:nb_intervals){
+    left = start_interval + interval_length*(i-1)
+    right = start_interval + interval_length*i
+    list_intervals[[i]] <- c(left,right)
+  }
+
+parLapply(cluster, list_intervals, 
+          (function(int) {integrate(function(x) {x*sin(x)}, int[1], int[2], subdivisions = 1e7)}))
+system.time(parLapply(cluster, list_intervals, 
+                      (function(int) {integrate(function(x) {x*sin(x)}, int[1], int[2], subdivisions = 1e7)})))
+#user  system elapsed 
+#0.00    0.00    1.69 
