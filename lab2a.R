@@ -1,4 +1,4 @@
-### Optimization ###
+################### Optimization ###################
 
 f <- function(x) {(x-3)^2 + 2*(x-3)^2 + 3*(x-15)^2 + sin(100*x)}
 
@@ -16,7 +16,8 @@ optimize(f, interval2)
 optimize(f, interval3)
 ## $minimum 10.16165
 
-### Integrating a function ###
+
+################### Integrating a function ###################
 
 f2 <- function(x) {x*sin(x)}
 plot(f2, -7e5, 7e5)
@@ -69,3 +70,51 @@ system.time(parLapply(cluster, list_intervals,
 #16 intervals, 16 clusters
 #user  system elapsed 
 #0.00    0.00    0.31 
+
+
+################### Functional Operators ###################
+
+
+### Memoisation ###
+library(memoise)
+
+fib <- function(n) {
+  if (n < 2) return(1)
+  fib(n - 2) + fib(n - 1)
+}
+
+fib2 <- memoise(function(n) {
+  if (n < 2) return(1)
+  fib2(n - 2) + fib2(n - 1)
+})
+
+fib3 <- memoise(fib)
+
+#> system.time(fib(28))
+#user  system elapsed 
+#1.44    0.00    1.44 
+#> system.time(fib2(28))
+#user  system elapsed 
+#   0       0       0 
+#> system.time(fib3(28))
+#user  system elapsed 
+#   0       0       0
+
+### ggplot ###
+library(ggplot2)
+
+qplot(displ, hwy, data=mpg)
+qplot(displ, hwy, data=mpg, color=drv)
+qplot(displ, hwy, data=mpg, geom=c("point","smooth")) 
+qplot(displ, hwy, data =mpg, geom=c("point","smooth"), method="lm") 
+qplot(displ, hwy, data =mpg, geom=c("point","smooth"),xmethod="lm", color=drv)
+gr <- qplot(displ, hwy, data =mpg, geom=c("point","smooth"),xmethod="lm", color=drv)
+gr + theme(panel.background = element_rect(fill = "pink"))
+
+qplot(carat, price, data=diamonds) 
+grc <- qplot(carat, price, data=diamonds, color=color) 
+qplot(carat, price, data=diamonds, geom=c("point","smooth"),xmethod="lm", color=color)
+grd <- qplot(carat, price, data=diamonds, geom=c("point","smooth"),xmethod="lm", color=color)
+grd + scale_colour_brewer(name = "New legends")
+qplot(color, price / carat, data = diamonds, geom = "boxplot")
+
