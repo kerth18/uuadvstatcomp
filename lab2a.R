@@ -24,4 +24,17 @@ plot(f2, -7e5, 7e5)
 integrate(f2, -7e5, 7e5, subdivisions = 1e7)
 system.time(integrate(f2, -7e5, 7e5, subdivisions = 1e7))
 ## user  system elapsed 
-## 32.37    0.03   34.24 
+# 32.37    0.03   34.24 
+
+library(parallel)
+cores <- detectCores()
+cluster <- makePSOCKcluster(cores)
+
+## 2 cores
+int1 <- c(-7e5,0)
+int2 <- c(0,7e5)
+list_intervals <- list(int1,int2)
+parLapply(cluster, list_intervals, 
+          (function(int) {integrate(function(x) {x*sin(x)}, int[1], int[2], subdivisions = 1e7)}))
+## user  system elapsed 
+## 0.00    0.02    6.32 
